@@ -1,0 +1,10 @@
+- name: Run Smart Exam Seating System using Docker
+  hosts: local
+  tasks:
+    - name: Run Docker container
+      command: sudo docker run exam-seating-system
+      register: output
+
+    - name: Display seating output
+      debug:
+        var: output.stdout_lines
