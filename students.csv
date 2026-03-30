@@ -1,8 +1,31 @@
-RegNo,Name,Dept
-23MIS0014,Keethi,Cybersecurity
-23MIS0059,Thejesh,AI/ML
-23MID0080,Santhosh,Data Science
-23MIS0266,Rishvanth,AI/ML
-23MIS0614,Pothiprajan,Devops
-23MIS0339,Sivapraksam,R
-23MIS0356,Sabarrish,R
+RegNo,Name,Dept,Subject
+23MIS001,Arjun,CSE,Operating Systems
+23MIS002,Keerthi,Cybersecurity,Software Configuration
+23MIS003,Santhosh,Data Science,Data Mining
+23MIS004,Rishvanth,AI/ML,Data Mining
+23MIS005,Pothiprajan,DevOps,Agile
+23MIS006,Sivaprakasam,CSE,Discrete
+23MIS007,Sabarrish,Devops,Agile
+23MIS008,Karthik,CSE,Operating Systems
+23MIS009,Harini,AIML,Data Mining
+23MIS010,Vignesh,Cybersecurity,Software Configuration
+23MIS011,Divya,CSE,Operating Systems
+23MIS012,Manoj,AIML,Machine Learning
+23MIS013,Swathi,Data Science,Data Mining
+23MIS014,Ajay,CSE,Operating Systems
+23MIS015,Naveen,AIML,Machine Learning
+23MIS016,Priya,Data Science,Discrete
+23MIS017,Rahul,CSE,Computer Networks
+23MIS018,Sneha,AIML,Operating Systems
+23MIS019,Kiran,Data Science,Software Configuration
+23MIS020,Anjali,CSE,Computer Networks
+23MIS021,Varun,AIML,Machine Learning
+23MIS022,Meena,Data Science,Agile
+23MIS023,Gokul,CSE,Operating Systems
+23MIS024,Deepa,AIML,Software Configuration
+23MIS025,Aravind,Data Science,Data Mining
+23MIS026,Kavya,CSE,Operating Systems
+23MIS027,Suresh,AIML,Discrete
+23MIS028,Lavanya,Data Science,Statistics
+23MIS029,Praveen,CSE,Statistics
+23MIS030,Nithya,AIML,Statistics
