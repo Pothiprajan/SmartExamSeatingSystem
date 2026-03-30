@@ -4,4 +4,6 @@ WORKDIR /app
 
 COPY . .
 
-CMD ["python3", "seating.py"]
+RUN pip install flask
+
+CMD ["python3", "app.py"]

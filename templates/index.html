@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Exam Seating</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f6f8;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .controls {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        input, select {
+            padding: 8px;
+            margin: 5px;
+        }
+
+        table {
+            margin: auto;
+            border-collapse: collapse;
+            width: 80%;
+            background: white;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background: #333;
+            color: white;
+        }
+
+        .hall-A { background: #e3f2fd; }
+        .hall-B { background: #e8f5e9; }
+        .hall-C { background: #fff3e0; }
+        .hall-D { background: #fce4ec; }
+
+        .subject {
+            padding: 3px 6px;
+            border-radius: 5px;
+            background: #555;
+            color: white;
+            font-size: 12px;
+        }
+
+        button {
+            padding: 8px 12px;
+            background: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>📘 Smart Exam Seating System</h1>
+
+<div class="controls">
+    <form method="GET">
+        <input type="text" name="search" placeholder="Search student..." />
+
+        <select name="hall">
+            <option value="">All Halls</option>
+            {% for h in halls %}
+            <option value="{{ h }}">Hall {{ h }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Filter</button>
+        <a href="/"><button type="button">Reset</button></a>
+    </form>
+</div>
+
+<table>
+<tr>
+    <th>Hall</th>
+    <th>Seat</th>
+    <th>Name</th>
+    <th>Subject</th>
+</tr>
+
+{% for row in data %}
+<tr class="hall-{{ row.hall }}">
+    <td>{{ row.hall }}</td>
+    <td>{{ row.seat }}</td>
+    <td>{{ row.name }}</td>
+    <td><span class="subject">{{ row.subject }}</span></td>
+</tr>
+{% endfor %}
+
+</table>
+
+</body>
+</html>
