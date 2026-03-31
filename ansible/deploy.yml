@@ -1,10 +1,17 @@
-- name: Run Smart Exam Seating System using Docker
+- name: Deploy Smart Exam Seating App
   hosts: local
-  tasks:
-    - name: Run Docker container
-      command: sudo docker run exam-seating-system
-      register: output
+  become: yes
 
-    - name: Display seating output
-      debug:
-        var: output.stdout_lines
+  tasks:
+
+    - name: Stop old container
+      command: docker rm -f seating-app
+      ignore_errors: yes
+
+    - name: Build Docker image
+      command: docker build -t seating-app .
+      args:
+        chdir: /home/prajan/SmartExamSystem
+
+    - name: Run container
+      command: docker run -d -p 5000:5000 --name seating-app seating-app
