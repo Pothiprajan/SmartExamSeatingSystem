@@ -5,6 +5,8 @@ from collections import defaultdict
 app = Flask(__name__)
 
 CSV_FILE = "students.csv"
+SEATING_FILE = "seating.csv"
+
 ROWS = 5
 COLS = 6
 
@@ -17,10 +19,42 @@ def read_students():
         with open(CSV_FILE, newline='') as file:
             reader = csv.DictReader(file)
             for row in reader:
-                students.append(row)
+                if row:  # safety
+                    students.append(row)
     except FileNotFoundError:
         pass
     return students
+
+# -----------------------------
+# READ SEATING
+# -----------------------------
+def read_seating():
+    seating = []
+    try:
+        with open(SEATING_FILE, newline='') as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                if row:
+                    seating.append(row)
+    except FileNotFoundError:
+        pass
+    return seating
+
+# -----------------------------
+# SAVE SEATING
+# -----------------------------
+def save_seating(seating):
+    with open(SEATING_FILE, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(["hall", "seat", "Name", "Subject"])
+
+        for s in seating:
+            writer.writerow([
+                s.get("hall", ""),
+                s.get("seat", ""),
+                s.get("Name", ""),
+                s.get("Subject", "")
+            ])
 
 # -----------------------------
 # ADD STUDENT
@@ -35,31 +69,32 @@ def add_student(regno, name, dept, subject):
 # -----------------------------
 def generate_seating(students):
 
+    if not students:
+        return []
+
     subject_groups = defaultdict(list)
 
     for s in students:
-        if 'Subject' in s and s['Subject']:
-            subject_groups[s['Subject']].append(s)
+        subject = s.get('Subject')
+        if subject:
+            subject_groups[subject].append(s)
 
-    # Round robin mix
     mixed_students = []
     while any(subject_groups.values()):
         for subject in list(subject_groups.keys()):
             if subject_groups[subject]:
                 mixed_students.append(subject_groups[subject].pop(0))
 
-    # Safety check
     def is_safe(seating, i, j, student):
         directions = [(-1,0),(1,0),(0,-1),(0,1)]
         for di, dj in directions:
             ni, nj = i + di, j + dj
             if 0 <= ni < ROWS and 0 <= nj < COLS:
                 neighbor = seating[ni][nj]
-                if neighbor and neighbor['Subject'] == student['Subject']:
+                if neighbor and neighbor.get('Subject') == student.get('Subject'):
                     return False
         return True
 
-    # Fill grid
     seating = [[None for _ in range(COLS)] for _ in range(ROWS)]
 
     for i in range(ROWS):
@@ -83,9 +118,6 @@ def generate_seating(students):
             if not placed and mixed_students:
                 seating[i][j] = mixed_students.pop(0)
 
-    # -----------------------------
-    # ✅ CONVERT TO LIST + ADD HALL
-    # -----------------------------
     final_seating = []
 
     for i in range(ROWS):
@@ -93,7 +125,6 @@ def generate_seating(students):
             student = seating[i][j]
             if student:
 
-                # ✅ Hall logic
                 if i < 2:
                     hall = "Hall - A"
                 elif i < 4:
@@ -104,8 +135,8 @@ def generate_seating(students):
                 final_seating.append({
                     "hall": hall,
                     "seat": f"{i+1}-{j+1}",
-                    "Name": student["Name"],
-                    "Subject": student["Subject"]
+                    "Name": student.get("Name", ""),
+                    "Subject": student.get("Subject", "")
                 })
 
     return final_seating
@@ -117,27 +148,26 @@ def generate_seating(students):
 def index():
     students = read_students()
 
-    search = request.args.get("search", "").lower()
-    subject_filter = request.args.get("subject", "")
+    seating = read_seating()
 
-    if search:
-        students = [s for s in students if search in s['Name'].lower()]
+    if not seating:
+        seating = generate_seating(students)
+        save_seating(seating)
 
-    if subject_filter:
-        students = [s for s in students if s['Subject'] == subject_filter]
-
-    seating = generate_seating(students)
-
-    subjects = list(set([s['Subject'] for s in read_students() if 'Subject' in s]))
-
-    return render_template("index.html",
-                           seating=seating,
-                           subjects=subjects,
-                           search=search,
-                           selected_subject=subject_filter)
+    return render_template("index.html", seating=seating)
 
 # -----------------------------
-# ADD STUDENT ROUTE (FIXED)
+# GENERATE BUTTON
+# -----------------------------
+@app.route("/generate")
+def generate():
+    students = read_students()
+    seating = generate_seating(students)
+    save_seating(seating)
+    return redirect("/")
+
+# -----------------------------
+# ADD STUDENT ROUTE
 # -----------------------------
 @app.route("/add", methods=["GET", "POST"])
 def add():
