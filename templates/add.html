@@ -37,7 +37,6 @@
             appearance: none;
         }
 
-        /* 🔥 Focus effect */
         input:focus, select:focus {
             outline: none;
             border: 1px solid #74ebd5;
@@ -67,6 +66,13 @@
 
         a:hover {
             text-decoration: underline;
+        }
+
+        /* 🔥 SUCCESS / ERROR MESSAGE */
+        .message {
+            margin-top: 10px;
+            font-size: 14px;
+            color: red;
         }
     </style>
 </head>
@@ -104,6 +110,11 @@
         </select>
 
         <button type="submit">Add Student</button>
+
+        <!-- 🔥 OPTIONAL MESSAGE -->
+        {% if message %}
+            <div class="message">{{ message }}</div>
+        {% endif %}
 
     </form>
 

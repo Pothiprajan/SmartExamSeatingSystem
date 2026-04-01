@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect
 import csv
+import random
 from collections import defaultdict
 
 app = Flask(__name__)
@@ -26,7 +27,7 @@ def read_students():
     return students
 
 # -----------------------------
-# SAVE STUDENTS (FOR DELETE DUPLICATES FIX)
+# SAVE STUDENTS
 # -----------------------------
 def save_students(students):
     with open(CSV_FILE, mode='w', newline='') as file:
@@ -36,46 +37,31 @@ def save_students(students):
             writer.writerow([s["RegNo"], s["Name"], s["Dept"], s["Subject"]])
 
 # -----------------------------
-# READ SEATING
-# -----------------------------
-def read_seating():
-    seating = []
-    try:
-        with open(SEATING_FILE, newline='') as file:
-            reader = csv.DictReader(file)
-            for row in reader:
-                if row:
-                    seating.append(row)
-    except FileNotFoundError:
-        pass
-    return seating
-
-# -----------------------------
 # SAVE SEATING
 # -----------------------------
 def save_seating(seating):
     with open(SEATING_FILE, mode='w', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(["hall", "seat", "Name", "Subject"])
+        writer.writerow(["hall", "seat", "Name", "Subject", "RegNo"])
 
         for s in seating:
             writer.writerow([
                 s.get("hall", ""),
                 s.get("seat", ""),
                 s.get("Name", ""),
-                s.get("Subject", "")
+                s.get("Subject", ""),
+                s.get("RegNo", "")
             ])
 
 # -----------------------------
-# ADD STUDENT
+# ADD STUDENT (NO DUPLICATE)
 # -----------------------------
 def add_student(regno, name, dept, subject):
     students = read_students()
 
-    # 🔥 DUPLICATE PREVENTION
     for s in students:
         if s["RegNo"] == regno:
-            return False   # already exists
+            return False
 
     students.append({
         "RegNo": regno,
@@ -102,11 +88,18 @@ def generate_seating(students):
         if subject:
             subject_groups[subject].append(s)
 
+    # 🔥 RANDOMIZE GROUPS
+    for subject in subject_groups:
+        random.shuffle(subject_groups[subject])
+
     mixed_students = []
     while any(subject_groups.values()):
         for subject in list(subject_groups.keys()):
             if subject_groups[subject]:
                 mixed_students.append(subject_groups[subject].pop(0))
+
+    # 🔥 FINAL SHUFFLE
+    random.shuffle(mixed_students)
 
     def is_safe(seating, i, j, student):
         directions = [(-1,0),(1,0),(0,-1),(0,1)]
@@ -158,8 +151,9 @@ def generate_seating(students):
                 final_seating.append({
                     "hall": hall,
                     "seat": f"{i+1}-{j+1}",
-                    "Name": student.get("Name", ""),
-                    "Subject": student.get("Subject", "")
+                    "Name": student.get("Name"),
+                    "Subject": student.get("Subject"),
+                    "RegNo": student.get("RegNo")
                 })
 
     return final_seating
@@ -170,9 +164,34 @@ def generate_seating(students):
 @app.route("/")
 def index():
     students = read_students()
-    seating = generate_seating(students)   # 🔥 ALWAYS UPDATED
+    seating = generate_seating(students)
     save_seating(seating)
     return render_template("index.html", seating=seating)
+
+# -----------------------------
+# GENERATE BUTTON
+# -----------------------------
+@app.route("/generate")
+def generate():
+    students = read_students()
+    seating = generate_seating(students)
+    save_seating(seating)
+    return redirect("/")
+
+# -----------------------------
+# DELETE STUDENT
+# -----------------------------
+@app.route("/delete/<regno>")
+def delete(regno):
+    students = read_students()
+    students = [s for s in students if s["RegNo"] != regno]
+
+    save_students(students)
+
+    seating = generate_seating(students)
+    save_seating(seating)
+
+    return redirect("/")
 
 # -----------------------------
 # ADD STUDENT
@@ -188,7 +207,7 @@ def add():
         if regno and name and dept and subject:
             add_student(regno, name, dept, subject)
 
-        return redirect("/")  # 🔥 AUTO UPDATE
+        return redirect("/")
 
     return render_template("add.html")
 
