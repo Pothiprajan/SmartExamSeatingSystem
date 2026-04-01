@@ -24,6 +24,14 @@
             box-shadow: 0px 6px 15px rgba(0,0,0,0.2);
         }
 
+        /* 🔥 BUTTON ALIGNMENT FIX */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
         table {
             margin: auto;
             border-collapse: collapse;
@@ -72,7 +80,7 @@
             margin: 5px;
             border-radius: 5px;
             border: 1px solid #ccc;
-            appearance: none; /* alignment fix */
+            appearance: none;
         }
 
         input:focus, select:focus {
@@ -93,12 +101,18 @@
 
     <div class="container">
 
-        <!-- Add Student -->
-        <a href="/add">
-            <button class="add-btn">+ Add Student</button>
-        </a>
+        <!-- 🔥 ACTION BUTTONS -->
+        <div class="action-buttons">
+            <a href="/add">
+                <button class="add-btn">+ Add Student</button>
+            </a>
 
-        <!-- Filters -->
+            <a href="/generate" onclick="return confirm('Regenerate seating? This will change all seat assignments!')">
+                <button style="background:green; color:white;">🔄 Generate Seating</button>
+            </a>
+        </div>
+
+        <!-- FILTERS -->
         <div class="filters">
             <input type="text" id="searchInput" placeholder="Search student...">
 
