@@ -1,26 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Smart Exam Seating</title>
+    <title>Smart Exam Seating System</title>
+
     <style>
         body {
             font-family: Arial;
-            background: #f4f6f8;
+            text-align: center;
+            background-color: #f4f4f4;
         }
 
         h1 {
-            text-align: center;
-            color: #333;
-        }
-
-        .controls {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        input, select {
-            padding: 8px;
-            margin: 5px;
+            margin-top: 20px;
         }
 
         table {
@@ -32,76 +23,108 @@
 
         th, td {
             padding: 10px;
-            border: 1px solid #ddd;
-            text-align: center;
+            border: 1px solid #ccc;
         }
 
         th {
-            background: #333;
+            background-color: #333;
             color: white;
-        }
-
-        .hall-A { background: #e3f2fd; }
-        .hall-B { background: #e8f5e9; }
-        .hall-C { background: #fff3e0; }
-        .hall-D { background: #fce4ec; }
-
-        .subject {
-            padding: 3px 6px;
-            border-radius: 5px;
-            background: #555;
-            color: white;
-            font-size: 12px;
         }
 
         button {
             padding: 8px 12px;
-            background: #333;
-            color: white;
-            border: none;
+            margin: 5px;
             cursor: pointer;
+        }
+
+        input, select {
+            padding: 8px;
+            margin: 5px;
         }
     </style>
 </head>
 
 <body>
 
-<h1>📘 Smart Exam Seating System</h1>
+    <h1>Smart Exam Seating System</h1>
 
-<div class="controls">
-    <form method="GET">
-        <input type="text" name="search" placeholder="Search student..." />
+    <!-- Add Student Button -->
+    <a href="/add">
+        <button style="background:black; color:white;">+ Add Student</button>
+    </a>
 
-        <select name="hall">
-            <option value="">All Halls</option>
-            {% for h in halls %}
-            <option value="{{ h }}">Hall {{ h }}</option>
-            {% endfor %}
+    <!-- FILTER SECTION -->
+    <div style="margin: 20px;">
+        <input type="text" id="searchInput" placeholder="Search student...">
+
+        <select id="hallFilter">
+            <option value="all">All Halls</option>
+            <option value="Hall - A">Hall - A</option>
+            <option value="Hall - B">Hall - B</option>
+            <option value="Hall - C">Hall - C</option>
         </select>
 
-        <button type="submit">Filter</button>
-        <a href="/"><button type="button">Reset</button></a>
-    </form>
-</div>
+        <button onclick="applyFilter()">Filter</button>
+        <button onclick="resetFilter()">Reset</button>
+    </div>
 
-<table>
-<tr>
-    <th>Hall</th>
-    <th>Seat</th>
-    <th>Name</th>
-    <th>Subject</th>
-</tr>
+    <!-- TABLE -->
+    <table>
+        <thead>
+            <tr>
+                <th>Hall</th>
+                <th>Seat</th>
+                <th>Name</th>
+                <th>Subject</th>
+            </tr>
+        </thead>
 
-{% for row in data %}
-<tr class="hall-{{ row.hall }}">
-    <td>{{ row.hall }}</td>
-    <td>{{ row.seat }}</td>
-    <td>{{ row.name }}</td>
-    <td><span class="subject">{{ row.subject }}</span></td>
-</tr>
-{% endfor %}
+        <tbody>
+            {% for student in seating %}
+            <tr>
+                <!-- FIXED HERE -->
+                <td>{{ student.hall }}</td>
 
-</table>
+                <td>{{ student.seat }}</td>
+                <td>{{ student.name }}</td>
+                <td>{{ student.subject }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- SCRIPT -->
+    <script>
+        function applyFilter() {
+            let search = document.getElementById("searchInput").value.toLowerCase();
+            let hall = document.getElementById("hallFilter").value;
+
+            let rows = document.querySelectorAll("table tbody tr");
+
+            rows.forEach(row => {
+                let name = row.cells[2].innerText.toLowerCase();
+                let subject = row.cells[3].innerText.toLowerCase();
+                let hallValue = row.cells[0].innerText;
+
+                let matchSearch = name.includes(search) || subject.includes(search);
+                let matchHall = (hall === "all" || hallValue === hall);
+
+                if (matchSearch && matchHall) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        }
+
+        function resetFilter() {
+            document.getElementById("searchInput").value = "";
+            document.getElementById("hallFilter").value = "all";
+
+            let rows = document.querySelectorAll("table tbody tr");
+            rows.forEach(row => row.style.display = "");
+        }
+    </script>
 
 </body>
 </html>

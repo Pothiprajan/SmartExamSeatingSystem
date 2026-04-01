@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Student</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+            background-color: #f4f4f4;
+        }
+
+        form {
+            margin-top: 50px;
+        }
+
+        input {
+            display: block;
+            margin: 10px auto;
+            padding: 10px;
+            width: 250px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: black;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>Add Student</h2>
+
+    <!-- 🔴 IMPORTANT -->
+    <form method="POST" action="/add">
+
+        <input type="text" name="regno" placeholder="Register Number" required>
+        <input type="text" name="name" placeholder="Name" required>
+        <input type="text" name="dept" placeholder="Department" required>
+        <input type="text" name="subject" placeholder="Subject" required>
+
+        <button type="submit">Add Student</button>
+
+    </form>
+
+    <br>
+    <a href="/">← Back to Home</a>
+
+</body>
+</html>
