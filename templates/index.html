@@ -7,39 +7,82 @@
         body {
             font-family: Arial;
             text-align: center;
-            background-color: #f4f4f4;
+            background: linear-gradient(to right, #ffecd2, #fcb69f);
         }
 
         h1 {
             margin-top: 20px;
+            color: #333;
+        }
+
+        .container {
+            width: 85%;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0px 6px 15px rgba(0,0,0,0.2);
         }
 
         table {
             margin: auto;
             border-collapse: collapse;
-            width: 80%;
-            background: white;
+            width: 100%;
         }
 
         th, td {
-            padding: 10px;
-            border: 1px solid #ccc;
+            padding: 12px;
+            border: 1px solid #ddd;
         }
 
         th {
-            background-color: #333;
+            background: linear-gradient(45deg, #333, #555);
             color: white;
         }
 
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #ffe0cc;
+            transition: 0.3s;
+        }
+
         button {
-            padding: 8px 12px;
+            padding: 8px 14px;
             margin: 5px;
             cursor: pointer;
+            border-radius: 5px;
+            border: none;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+        }
+
+        .add-btn {
+            background: linear-gradient(45deg, black, #444);
+            color: white;
         }
 
         input, select {
             padding: 8px;
             margin: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            appearance: none; /* alignment fix */
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border: 1px solid #fcb69f;
+            box-shadow: 0 0 5px #fcb69f;
+        }
+
+        .filters {
+            margin: 20px;
         }
     </style>
 </head>
@@ -48,48 +91,52 @@
 
     <h1>Smart Exam Seating System</h1>
 
-    <!-- Add Student Button -->
-    <a href="/add">
-        <button style="background:black; color:white;">+ Add Student</button>
-    </a>
+    <div class="container">
 
-    <!-- FILTER SECTION -->
-    <div style="margin: 20px;">
-        <input type="text" id="searchInput" placeholder="Search student...">
+        <!-- Add Student -->
+        <a href="/add">
+            <button class="add-btn">+ Add Student</button>
+        </a>
 
-        <select id="hallFilter">
-            <option value="all">All Halls</option>
-            <option value="Hall - A">Hall - A</option>
-            <option value="Hall - B">Hall - B</option>
-            <option value="Hall - C">Hall - C</option>
-        </select>
+        <!-- Filters -->
+        <div class="filters">
+            <input type="text" id="searchInput" placeholder="Search student...">
 
-        <button onclick="applyFilter()">Filter</button>
-        <button onclick="resetFilter()">Reset</button>
+            <select id="hallFilter">
+                <option value="all">All Halls</option>
+                <option value="Hall - A">Hall - A</option>
+                <option value="Hall - B">Hall - B</option>
+                <option value="Hall - C">Hall - C</option>
+            </select>
+
+            <button onclick="applyFilter()">Filter</button>
+            <button onclick="resetFilter()">Reset</button>
+        </div>
+
+        <!-- TABLE -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Hall</th>
+                    <th>Seat</th>
+                    <th>Name</th>
+                    <th>Subject</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for student in seating %}
+                <tr>
+                    <td>{{ student.hall }}</td>
+                    <td>{{ student.seat }}</td>
+                    <td>{{ student.Name }}</td>
+                    <td>{{ student.Subject }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
     </div>
-
-    <!-- TABLE -->
-    <table>
-        <thead>
-            <tr>
-                <th>Hall</th>
-                <th>Seat</th>
-                <th>Name</th>
-                <th>Subject</th>
-            </tr>
-        </thead>
-
-        <tbody>
-            {% for student in seating %}
-            <tr>
-                <td>{{ student.hall }}</td>
-                <td>{{ student.seat }}</td>
-                <td>{{ student.Name }}</td>
-                <td>{{ student.Subject }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
 
     <!-- SCRIPT -->
     <script>
@@ -107,11 +154,7 @@
                 let matchSearch = name.includes(search) || subject.includes(search);
                 let matchHall = (hall === "all" || hallValue === hall);
 
-                if (matchSearch && matchHall) {
-                    row.style.display = "";
-                } else {
-                    row.style.display = "none";
-                }
+                row.style.display = (matchSearch && matchHall) ? "" : "none";
             });
         }
 
