@@ -7,26 +7,56 @@
         body {
             font-family: Arial;
             text-align: center;
-            background-color: #f4f4f4;
+            background: linear-gradient(to right, #74ebd5, #ACB6E5);
+        }
+
+        h2 {
+            margin-top: 40px;
+            color: #333;
         }
 
         form {
-            margin-top: 50px;
+            margin-top: 30px;
+            background: white;
+            padding: 30px;
+            width: 320px;
+            margin-left: auto;
+            margin-right: auto;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
         }
 
         input, select {
             display: block;
-            margin: 10px auto;
+            margin: 12px auto;
             padding: 10px;
-            width: 250px;
+            width: 90%;
+            border-radius: 5px;
+            border: 1px solid #ccc;
         }
 
         button {
             padding: 10px 20px;
-            background: black;
+            background: #333;
             color: white;
             border: none;
             cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background: #555;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            color: #333;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -39,9 +69,18 @@
 
         <input type="text" name="regno" placeholder="Register Number" required>
         <input type="text" name="name" placeholder="Name" required>
-        <input type="text" name="dept" placeholder="Department" required>
 
-        <!-- ✅ DROPDOWN instead of typing (prevents mistakes) -->
+        <!-- ✅ COURSE (NEW DROPDOWN) -->
+        <select name="dept" required>
+            <option value="">Select Course</option>
+            <option value="CSE">CSE</option>
+            <option value="AIML">AIML</option>
+            <option value="Data Science">Data Science</option>
+            <option value="Cybersecurity">Cybersecurity</option>
+            <option value="DevOps">DevOps</option>
+        </select>
+
+        <!-- ✅ SUBJECT -->
         <select name="subject" required>
             <option value="">Select Subject</option>
             <option value="Operating Systems">Operating Systems</option>
@@ -58,7 +97,6 @@
 
     </form>
 
-    <br>
     <a href="/">← Back to Home</a>
 
 </body>
