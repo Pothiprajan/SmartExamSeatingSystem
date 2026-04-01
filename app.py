@@ -25,20 +25,22 @@ def read_students():
 # -----------------------------
 # ADD STUDENT
 # -----------------------------
-def add_student(name, subject):
+def add_student(regno, name, dept, subject):
     with open(CSV_FILE, mode='a', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow([name, subject])
+        writer.writerow([regno, name, dept, subject])
 
 # -----------------------------
 # SMART SEATING LOGIC
 # -----------------------------
 def generate_seating(students):
 
-    # Group by subject
     subject_groups = defaultdict(list)
+
+    # ✅ FIXED HERE (Subject instead of subject)
     for s in students:
-        subject_groups[s['subject']].append(s)
+        if 'Subject' in s and s['Subject']:
+            subject_groups[s['Subject']].append(s)
 
     # Mix students (round robin)
     mixed_students = []
@@ -54,14 +56,12 @@ def generate_seating(students):
             ni, nj = i + di, j + dj
             if 0 <= ni < ROWS and 0 <= nj < COLS:
                 neighbor = seating[ni][nj]
-                if neighbor and neighbor['subject'] == student['subject']:
+                if neighbor and neighbor['Subject'] == student['Subject']:
                     return False
         return True
 
     # Fill seating
     seating = [[None for _ in range(COLS)] for _ in range(ROWS)]
-    index = 0
-    attempts = 0
 
     for i in range(ROWS):
         for j in range(COLS):
@@ -69,20 +69,19 @@ def generate_seating(students):
             placed = False
             loop_count = 0
 
-            while index < len(mixed_students) and loop_count < len(mixed_students):
-                student = mixed_students[index]
+            while mixed_students and loop_count < len(mixed_students):
+                student = mixed_students[0]
 
                 if is_safe(seating, i, j, student):
                     seating[i][j] = student
-                    mixed_students.pop(index)
+                    mixed_students.pop(0)
                     placed = True
                     break
                 else:
-                    # rotate list
-                    mixed_students.append(mixed_students.pop(index))
+                    mixed_students.append(mixed_students.pop(0))
                     loop_count += 1
 
-            # fallback (if no safe placement)
+            # fallback
             if not placed and mixed_students:
                 seating[i][j] = mixed_students.pop(0)
 
@@ -100,14 +99,14 @@ def index():
 
     # Filter logic
     if search:
-        students = [s for s in students if search in s['name'].lower()]
+        students = [s for s in students if search in s['Name'].lower()]
 
     if subject_filter:
-        students = [s for s in students if s['subject'] == subject_filter]
+        students = [s for s in students if s['Subject'] == subject_filter]
 
     seating = generate_seating(students)
 
-    subjects = list(set([s['subject'] for s in read_students()]))
+    subjects = list(set([s['Subject'] for s in read_students() if 'Subject' in s]))
 
     return render_template("index.html",
                            seating=seating,
@@ -120,11 +119,13 @@ def index():
 # -----------------------------
 @app.route("/add", methods=["POST"])
 def add():
+    regno = request.form.get("regno")
     name = request.form.get("name")
+    dept = request.form.get("dept")
     subject = request.form.get("subject")
 
-    if name and subject:
-        add_student(name, subject)
+    if regno and name and dept and subject:
+        add_student(regno, name, dept, subject)
 
     return redirect("/")
 
