@@ -37,12 +37,11 @@ def generate_seating(students):
 
     subject_groups = defaultdict(list)
 
-    # ✅ FIXED HERE (Subject instead of subject)
     for s in students:
         if 'Subject' in s and s['Subject']:
             subject_groups[s['Subject']].append(s)
 
-    # Mix students (round robin)
+    # Round robin mix
     mixed_students = []
     while any(subject_groups.values()):
         for subject in list(subject_groups.keys()):
@@ -60,7 +59,7 @@ def generate_seating(students):
                     return False
         return True
 
-    # Fill seating
+    # Fill grid
     seating = [[None for _ in range(COLS)] for _ in range(ROWS)]
 
     for i in range(ROWS):
@@ -81,11 +80,35 @@ def generate_seating(students):
                     mixed_students.append(mixed_students.pop(0))
                     loop_count += 1
 
-            # fallback
             if not placed and mixed_students:
                 seating[i][j] = mixed_students.pop(0)
 
-    return seating
+    # -----------------------------
+    # ✅ CONVERT TO LIST + ADD HALL
+    # -----------------------------
+    final_seating = []
+
+    for i in range(ROWS):
+        for j in range(COLS):
+            student = seating[i][j]
+            if student:
+
+                # ✅ Hall logic
+                if i < 2:
+                    hall = "Hall - A"
+                elif i < 4:
+                    hall = "Hall - B"
+                else:
+                    hall = "Hall - C"
+
+                final_seating.append({
+                    "hall": hall,
+                    "seat": f"{i+1}-{j+1}",
+                    "Name": student["Name"],
+                    "Subject": student["Subject"]
+                })
+
+    return final_seating
 
 # -----------------------------
 # HOME PAGE
@@ -97,7 +120,6 @@ def index():
     search = request.args.get("search", "").lower()
     subject_filter = request.args.get("subject", "")
 
-    # Filter logic
     if search:
         students = [s for s in students if search in s['Name'].lower()]
 
@@ -115,19 +137,22 @@ def index():
                            selected_subject=subject_filter)
 
 # -----------------------------
-# ADD STUDENT ROUTE
+# ADD STUDENT ROUTE (FIXED)
 # -----------------------------
-@app.route("/add", methods=["POST"])
+@app.route("/add", methods=["GET", "POST"])
 def add():
-    regno = request.form.get("regno")
-    name = request.form.get("name")
-    dept = request.form.get("dept")
-    subject = request.form.get("subject")
+    if request.method == "POST":
+        regno = request.form.get("regno")
+        name = request.form.get("name")
+        dept = request.form.get("dept")
+        subject = request.form.get("subject")
 
-    if regno and name and dept and subject:
-        add_student(regno, name, dept, subject)
+        if regno and name and dept and subject:
+            add_student(regno, name, dept, subject)
 
-    return redirect("/")
+        return redirect("/")
+
+    return render_template("add.html")
 
 # -----------------------------
 # RUN APP
