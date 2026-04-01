@@ -19,11 +19,21 @@ def read_students():
         with open(CSV_FILE, newline='') as file:
             reader = csv.DictReader(file)
             for row in reader:
-                if row:  # safety
+                if row:
                     students.append(row)
     except FileNotFoundError:
         pass
     return students
+
+# -----------------------------
+# SAVE STUDENTS (FOR DELETE DUPLICATES FIX)
+# -----------------------------
+def save_students(students):
+    with open(CSV_FILE, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(["RegNo","Name","Dept","Subject"])
+        for s in students:
+            writer.writerow([s["RegNo"], s["Name"], s["Dept"], s["Subject"]])
 
 # -----------------------------
 # READ SEATING
@@ -60,12 +70,25 @@ def save_seating(seating):
 # ADD STUDENT
 # -----------------------------
 def add_student(regno, name, dept, subject):
-    with open(CSV_FILE, mode='a', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerow([regno, name, dept, subject])
+    students = read_students()
+
+    # 🔥 DUPLICATE PREVENTION
+    for s in students:
+        if s["RegNo"] == regno:
+            return False   # already exists
+
+    students.append({
+        "RegNo": regno,
+        "Name": name,
+        "Dept": dept,
+        "Subject": subject
+    })
+
+    save_students(students)
+    return True
 
 # -----------------------------
-# SMART SEATING LOGIC
+# SMART SEATING
 # -----------------------------
 def generate_seating(students):
 
@@ -142,32 +165,17 @@ def generate_seating(students):
     return final_seating
 
 # -----------------------------
-# HOME PAGE
+# HOME
 # -----------------------------
-@app.route("/", methods=["GET"])
+@app.route("/")
 def index():
     students = read_students()
-
-    seating = read_seating()
-
-    if not seating:
-        seating = generate_seating(students)
-        save_seating(seating)
-
+    seating = generate_seating(students)   # 🔥 ALWAYS UPDATED
+    save_seating(seating)
     return render_template("index.html", seating=seating)
 
 # -----------------------------
-# GENERATE BUTTON
-# -----------------------------
-@app.route("/generate")
-def generate():
-    students = read_students()
-    seating = generate_seating(students)
-    save_seating(seating)
-    return redirect("/")
-
-# -----------------------------
-# ADD STUDENT ROUTE
+# ADD STUDENT
 # -----------------------------
 @app.route("/add", methods=["GET", "POST"])
 def add():
@@ -180,12 +188,12 @@ def add():
         if regno and name and dept and subject:
             add_student(regno, name, dept, subject)
 
-        return redirect("/")
+        return redirect("/")  # 🔥 AUTO UPDATE
 
     return render_template("add.html")
 
 # -----------------------------
-# RUN APP
+# RUN
 # -----------------------------
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
