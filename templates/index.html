@@ -60,8 +60,6 @@
         <select id="hallFilter">
             <option value="all">All Halls</option>
             <option value="Hall - A">Hall - A</option>
-            <option value="Hall - B">Hall - B</option>
-            <option value="Hall - C">Hall - C</option>
         </select>
 
         <button onclick="applyFilter()">Filter</button>
@@ -80,15 +78,18 @@
         </thead>
 
         <tbody>
-            {% for student in seating %}
-            <tr>
-                <!-- FIXED HERE -->
-                <td>{{ student.hall }}</td>
-
-                <td>{{ student.seat }}</td>
-                <td>{{ student.name }}</td>
-                <td>{{ student.subject }}</td>
-            </tr>
+            {% for i in range(seating|length) %}
+                {% for j in range(seating[i]|length) %}
+                    {% set student = seating[i][j] %}
+                    {% if student %}
+                    <tr>
+                        <td>Hall - A</td>
+                        <td>{{ i + 1 }}-{{ j + 1 }}</td>
+                        <td>{{ student['Name'] }}</td>
+                        <td>{{ student['Subject'] }}</td>
+                    </tr>
+                    {% endif %}
+                {% endfor %}
             {% endfor %}
         </tbody>
     </table>

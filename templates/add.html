@@ -14,7 +14,7 @@
             margin-top: 50px;
         }
 
-        input {
+        input, select {
             display: block;
             margin: 10px auto;
             padding: 10px;
@@ -35,13 +35,24 @@
 
     <h2>Add Student</h2>
 
-    <!-- 🔴 IMPORTANT -->
     <form method="POST" action="/add">
 
         <input type="text" name="regno" placeholder="Register Number" required>
         <input type="text" name="name" placeholder="Name" required>
         <input type="text" name="dept" placeholder="Department" required>
-        <input type="text" name="subject" placeholder="Subject" required>
+
+        <!-- ✅ DROPDOWN instead of typing (prevents mistakes) -->
+        <select name="subject" required>
+            <option value="">Select Subject</option>
+            <option value="Operating Systems">Operating Systems</option>
+            <option value="Data Mining">Data Mining</option>
+            <option value="Machine Learning">Machine Learning</option>
+            <option value="Software Configuration">Software Configuration</option>
+            <option value="Computer Networks">Computer Networks</option>
+            <option value="Discrete">Discrete</option>
+            <option value="Statistics">Statistics</option>
+            <option value="Agile">Agile</option>
+        </select>
 
         <button type="submit">Add Student</button>
 
