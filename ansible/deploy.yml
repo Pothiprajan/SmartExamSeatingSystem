@@ -13,5 +13,5 @@
       args:
         chdir: /home/prajan/SmartExamSystem
 
-    - name: Run container
-      command: docker run -d -p 5000:5000 --name seating-app seating-app
+    - name: Run container with volume (PERSIST DATA)
+      command: docker run -d -p 5000:5000 -v /home/prajan/SmartExamSystem/students.csv:/app/students.csv --name seating-app seating-app
